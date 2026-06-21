@@ -508,12 +508,3 @@ body {
 .hero-card {
   transition: transform 0.2s ease;
 }
-
-.profile-layout {
-  background-image: url('https://pinimg.com');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  min-height: 200%; /* Forces the background to span the full height */
-  overflow: hidden;  /* Keeps the background within the rounded borders */
-}
