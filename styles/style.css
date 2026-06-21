@@ -1,0 +1,475 @@
+/* ==========================================================================
+   1. DESIGN COLOR PALETTE VARIABLES (Inspired by the HUSH Branding)
+   ========================================================================== */
+:root {
+  --bg-primary: #fcf6f5;
+  --bg-secondary: #f4cfdf;
+  --accent-pink: #f27aa5;
+  --accent-hotpink: #e63974;
+  --text-dark: #2a1118;
+  --text-light: #ffffff;
+  --card-shadow: 0 8px 24px rgba(230, 57, 116, 0.15);
+  --border-radius-lg: 24px;
+  --border-radius-sm: 12px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-dark);
+}
+
+/* ==========================================================================
+   2. HEADER & NAVIGATION
+   ========================================================================== */
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background-color: rgba(253, 246, 245, 0.9);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 2px solid var(--bg-secondary);
+}
+
+.logo {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--accent-hotpink);
+  letter-spacing: 2px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--text-dark);
+  font-weight: 600;
+  margin: 0 15px;
+  padding: 8px 16px;
+  border-radius: var(--border-radius-sm);
+  transition: all 0.3s ease;
+}
+
+.nav-links a.active, .nav-links a:hover {
+  background-color: var(--accent-pink);
+  color: var(--text-light);
+}
+
+.currency-display {
+  font-weight: 700;
+  color: #28a745;
+  margin-right: 15px;
+}
+
+.btn-primary {
+  background-color: var(--text-dark);
+  color: var(--text-light);
+  border: none;
+  padding: 10px 24px;
+  border-radius: var(--border-radius-lg);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   3. HERO SCROLL / MESH PREVIEW SECTION (TikTok Format)
+   ========================================================================== */
+.dashboard-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.hero-scroll-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 60px;
+}
+
+.hero-card {
+  width: 100%;
+  max-width: 500px;
+  background: var(--text-light);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+}
+
+.media-container {
+  width: 100%;
+  height: 550px;
+  background-color: var(--bg-secondary);
+  position: relative;
+}
+
+.mesh-renderer-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, var(--bg-secondary) 0%, var(--accent-pink) 100%);
+}
+
+.badge-overlay {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background-color: var(--accent-hotpink);
+  color: var(--text-light);
+  padding: 6px 14px;
+  border-radius: var(--border-radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.card-details {
+  padding: 20px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.btn-round {
+  background: var(--bg-primary);
+  border: 1px solid var(--bg-secondary);
+  padding: 10px 15px;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+}
+
+.btn-action-primary {
+  flex-grow: 1;
+  background-color: var(--accent-hotpink);
+  color: var(--text-light);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   4. CUSTOM MYSPACE PROFILE SCHEME & DISCORD BADGES
+   ========================================================================== */
+.profile-grid-section {
+  background: var(--text-light);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 60px;
+  border: 3px solid var(--user-theme-color);
+}
+
+.user-banner {
+  width: 100%;
+  height: 200px;
+  background-image: var(--user-bg-banner);
+  background-size: cover;
+  background-position: center;
+}
+
+.profile-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 30px;
+  padding: 30px;
+}
+
+.profile-sidebar {
+  text-align: center;
+  border-right: 1px solid var(--bg-secondary);
+  padding-right: 30px;
+}
+
+.profile-avatar-container {
+  margin-top: -80px;
+}
+
+.avatar-frame {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 5px solid var(--text-light);
+  overflow: hidden;
+  margin: 0 auto 15px;
+  position: relative;
+}
+
+.avatar-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.status-online::after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 18px;
+  height: 18px;
+  background-color: #28a745;
+  border: 3px solid var(--text-light);
+  border-radius: 50%;
+}
+
+.profile-audio-player {
+  background-color: var(--bg-primary);
+  padding: 15px;
+  border-radius: var(--border-radius-sm);
+  margin: 20px 0;
+}
+
+.custom-audio-element {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* Discord-Style Badges */
+.badge-section h4 {
+  margin-bottom: 10px;
+  font-size: 14px;
+  text-transform: uppercase;
+  color: var(--accent-hotpink);
+}
+
+.badge-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-light);
+}
+
+.badge-dev { background-color: #5865F2; }
+.badge-staff { background-color: #EB459E; }
+.badge-verified { background-color: #23A55A; }
+.badge-dj { background-color: #FEE75C; color: var(--text-dark); }
+
+/* HUD Sync Progress Tracking Bars */
+.content-card {
+  background-color: var(--bg-primary);
+  padding: 20px;
+  border-radius: var(--border-radius-lg);
+  margin-bottom: 20px;
+}
+
+.stat-bar-group {
+  margin-top: 15px;
+}
+
+.stat-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.progress-container {
+  width: 100%;
+  height: 12px;
+  background-color: var(--bg-secondary);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: var(--accent-pink);
+  border-radius: 6px;
+}
+
+.progress-bar.alert-status {
+  background-color: var(--accent-hotpink);
+}
+
+/* Poll Button Elements */
+.poll-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.poll-option-btn {
+  background: var(--text-light);
+  border: 2px solid var(--bg-secondary);
+  padding: 12px;
+  border-radius: var(--border-radius-sm);
+  text-align: left;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.poll-option-btn:hover {
+  background: var(--accent-pink);
+  color: var(--text-light);
+  border-color: var(--accent-pink);
+}
+
+/* ==========================================================================
+   5. MOBILE VIEWER SIMULATION LAYER (IMVU UI + ROBLOX CONTROLS)
+   ========================================================================== */
+.mobile-viewer-simulation {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.mobile-device-frame {
+  width: 360px;
+  height: 740px;
+  background-color: #111;
+  border-radius: 40px;
+  padding: 12px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  border: 4px solid #333;
+}
+
+.viewer-render-area {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #3a1c28 0%, #1a0b12 100%);
+  border-radius: 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* IMVU Top Bar Styling */
+.imvu-top-layer {
+  position: absolute;
+  top: 15px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  z-index: 10;
+}
+
+.imvu-btn {
+  background-color: rgba(255, 255, 255, 0.15);
+  border: none;
+  backdrop-filter: blur(5px);
+  color: var(--text-light);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.imvu-btn.active {
+  background-color: var(--accent-pink);
+}
+
+/* Roblox Interface Joystick Layers */
+.roblox-controls-layer {
+  position: absolute;
+  bottom: 160px;
+  width: 100%;
+  height: 100px;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  align-items: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.roblox-joystick {
+  width: 70px;
+  height: 70px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+.joystick-thumb {
+  width: 30px;
+  height: 30px;
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+}
+
+.roblox-jump-btn {
+  width: 50px;
+  height: 50px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  color: var(--text-light);
+  font-size: 18px;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* IMVU Style Bottom Wardrobe Asset Drawer */
+.wardrobe-overlay-drawer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 140px;
+  background-color: rgba(26, 11, 18, 0.9);
+  backdrop-filter: blur(10px);
+  border-top: 2px solid var(--accent-pink);
+  padding: 12px;
+  z-index: 10;
+}
+
+.wardrobe-overlay-drawer h5 {
+  color: var(--accent-pink);
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.inventory-grid {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 5px;
+}
+
+.inventory-item {
+  flex: 0 0 80px;
+  height: 70px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--text-light);
+  font-size: 11px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.inventory-item.active {
+  border-color: var(--accent-hotpink);
+  background-color: rgba(230, 57, 116, 0.2);
+}
