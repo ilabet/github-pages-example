@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialSplat - Profile Sandbox</title>
+    <!-- Link your existing SocialSplat CSS file here -->
+    <link rel="stylesheet" href="styles.css"> 
+    <style>
+        body { background-color: #050505; color: #ffffff; font-family: sans-serif; margin: 0; }
+        .nav-bar { background: #111; padding: 15px; display: flex; justify-content: space-between; border-bottom: 2px solid #222; }
+        .nav-logo { cursor: pointer; font-weight: bold; color: #ff00ff; text-decoration: none; }
+        .profile-header { padding: 30px; text-align: center; border-bottom: 1px solid #1a1a1a; }
+        .sandbox-area { padding: 20px; min-height: 200px; }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <div class="nav-bar">
+        <a href="index.html" class="nav-logo">SOCIAL SPLAT</a>
+        <div>
+            <button onclick="alert('Google Login Context Placeholder')" style="background:#4285F4; color:#fff; border:none; padding:8px 12px; cursor:pointer; margin-right:10px;">Login with Google</button>
+            <button onclick="alert('Second Life Connect Context Placeholder')" style="background:#e85424; color:#fff; border:none; padding:8px 12px; cursor:pointer;">Link Second Life</button>
+        </div>
+    </div>
+
+    <!-- Main Profile Card Information -->
+    <div class="profile-header">
+        <h1 id="display-name">Loading Profile...</h1>
+        <p id="username-handle">@username</p>
+        <!-- Background Audio Holder -->
+        <div id="audio-container"></div>
+    </div>
+
+    <!-- The MySpace Style Layout Sandbox Injection Box -->
+    <div id="myspace-sandbox" class="sandbox-area"></div>
+
+    <script>
+        // Replace this URL with your live deployed backend URL later!
+        const BACKEND_URL = "http://localhost:5000"; 
+        
+        // Mock data simulating profile values pulled from database
+        const mockProfileData = {
+            profile_name: "Cyber Splat Maker",
+            username: "ziplocbagg.resident",
+            bg_music_url: "https://soundhelix.com",
+            custom_html_css: `
+                <style>
+                    .custom-wall { background: linear-gradient(45deg, #0c001a, #000); border: 3px dashed #ff00ff; padding: 30px; text-align: center; border-radius: 8px;}
+                    .neon-text { color: #00ffff !important; text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff; font-size: 28px; }
+                </style>
+                <div class="custom-wall">
+                    <h2 class="neon-text">☣️ WELCOME TO MY CYBER LAYER ☣️</h2>
+                    <p style="color: #b5b5b5;">Custom layout modifications running seamlessly via direct database calls.</p>
+                </div>
+            `
+        };
+
+        function renderProfile(data) {
+            document.getElementById('display-name').innerText = data.profile_name;
+            document.getElementById('username-handle').innerText = "@" + data.username;
+            
+            // Render custom HTML/CSS into the sandbox safely
+            document.getElementById('myspace-sandbox').innerHTML = data.custom_html_css;
+
+            // Handle audio auto-play tracking loops
+            if (data.bg_music_url) {
+                document.getElementById('audio-container').innerHTML = `
+                    <audio src="${data.bg_music_url}" autoplay loop controls style="margin-top:15px; background:#111;"></audio>
+                `;
+            }
+        }
+
+        // Run profile loader layout setup
+        renderProfile(mockProfileData);
+    </script>
+</body>
+</html>
