@@ -56,5 +56,34 @@ app.get('/api/profile/:username', async (req, res) => {
   }
 });
 
+// FETCH TAB DATA ENDPOINT: Queries distinct rows depending on chosen profiles tab string
+app.get('/api/profile-tabs/:username', async (req, res) => {
+  const { username } = req.params;
+  const { type } = req.query; // 'posts', 'wishlist', 'videos'
+
+  try {
+    // Look up profile identity details first
+    const profileRes = await pool.query('SELECT profile_id FROM profiles WHERE username = $1', [username]);
+    if (profileRes.rows.length === 0) return res.status(404).json({ error: "Profile target unverified." });
+    
+    const userId = profileRes.rows[0].profile_id;
+
+    if (type === 'wishlist') {
+      const wishlistRes = await pool.query('SELECT * FROM saved_wishlists WHERE user_id = $1 ORDER BY created_at DESC', [userId]);
+      return res.json({ tabType: 'wishlist', items: wishlistRes.rows });
+    } else if (type === 'videos') {
+      const videoRes = await pool.query("SELECT * FROM user_content WHERE author_id = $1 AND media_type = 'VIDEO' ORDER BY created_at DESC", [userId]);
+      return res.json({ tabType: 'videos', items: videoRes.rows });
+    } else {
+      // Default: Return standard user feed updates grid
+      const postRes = await pool.query("SELECT * FROM user_content WHERE author_id = $1 AND media_type = 'POST' ORDER BY created_at DESC", [userId]);
+      return res.json({ tabType: 'posts', items: postRes.rows });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server operating on port ${PORT}`));
