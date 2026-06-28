@@ -88,6 +88,28 @@
             </div>
         </section>
 
+        <!-- 6. PINTEREST LAYOUT DYNAMIC EVENTS DISPLAY VIEW SECTION -->
+        <section id="events" style="margin-top: 40px; background:#050505; border-top:1px solid #222; padding-top:20px; color:#fff;">
+            <h3 style="color:#ff00ff; text-shadow:0 0 5px #ff00ff; margin-bottom:15px;">Upcoming Second Life Events</h3>
+            
+            <!-- Staggered Multi-Column Grid Wrapper -->
+            <div id="events-pinterest-masonry" style="column-count: 3; column-gap: 15px; width: 100%;">
+                <!-- Loaded Dynamically via Fetch Loops -->
+            </div>
+        </section>
+
+        <!-- Hidden Pop-up Overlay Detail Modal for Selected Event Cards -->
+        <div id="event-detail-modal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:99999; justify-content:center; align-items:center;">
+            <div style="background:#111; border:2px solid #00ffff; width:450px; padding:25px; border-radius:8px; text-align:center; color:#fff; max-height:85vh; overflow-y:auto;">
+                <h3 id="modal-event-title" style="margin-top:0; color:#00ffff;">Event Title</h3>
+                <div id="modal-event-media" style="margin-bottom:15px;"></div>
+                <div id="modal-slt-countdown" style="background:#222; padding:8px; border-radius:4px; font-weight:bold; color:#ff00ff; margin-bottom:15px;">SLT Countdown Ticker...</div>
+                <p id="modal-event-description" style="color:#b5b5b5; font-size:14px; text-align:left;"></p>
+                <button onclick="document.getElementById('event-detail-modal').style.display='none'" style="background:#ff00ff; color:#fff; border:none; padding:8px 20px; font-weight:bold; cursor:pointer; border-radius:4px; margin-top:15px;">Close Panel</button>
+            </div>
+        </div>
+
+        
         <!-- 3. MYSPACE-STYLE USER PROFILE SECTION -->
         <section class="profile-grid-section" id="profile" style="--user-theme-color: #ff66a3; --user-bg-banner: url('https://unsplash.com');">
             <div class="user-banner"></div>
@@ -159,6 +181,17 @@
                 </div>
             </div>
         </section>
+
+
+                <!-- 7. DIGITAL MARKETPLACE CATALOG VIEW MODULE -->
+        <section id="store" style="margin-top:40px; background:#050505; border-top:1px solid #222; padding-top:20px; color:#fff;">
+            <h3 style="color:#00ffff; text-shadow:0 0 5px #00ffff; margin-bottom:15px;">Splat Digital Merchant Marketplace</h3>
+            
+            <div id="marketplace-catalog-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:20px;">
+                <!-- Catalogs scale out here matching structural store items rows -->
+            </div>
+        </section>
+
 
 
                 <!-- 5. CHATROOM ENGINE WORKSPACE COMPONENT (WebSocket Integration) -->
@@ -395,6 +428,90 @@
         // Initialize immediate execution loops on page load contexts
         initializeSocketEngine();
 
+        // --- STEP 4: MASONRY EVENTS DISPLAY ENGINE & SLT COUNTER TICKERS ---
+        async function fetchAndRenderPlatformEvents() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/events`);
+                const events = await response.json();
+                const container = document.getElementById('events-pinterest-masonry');
+                container.innerHTML = '';
+
+                events.forEach(ev => {
+                    const card = document.createElement('div');
+                    card.style = "background:#111; border:1px solid #222; border-radius:6px; padding:12px; margin-bottom:15px; display:inline-block; width:100%; box-sizing:border-radius; cursor:pointer; box-sizing: border-box;";
+                    card.onclick = () => openDetailedEventViewModal(ev);
+                    
+                    card.innerHTML = `
+                        <img src="${ev.cover_photo_url}" style="width:100%; border-radius:4px; max-height:180px; object-fit:cover; margin-bottom:8px;">
+                        <span style="background:#ff00ff; color:#fff; font-size:10px; padding:2px 6px; font-weight:bold; border-radius:3px; text-transform:uppercase;">${ev.category}</span>
+                        <h4 style="margin:8px 0 4px 0; color:#fff;">${ev.title}</h4>
+                        <p style="margin:0; font-size:12px; color:#666;">Hosted by @${ev.username}</p>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (err) { console.error("Could not construct platform events grids:", err); }
+        }
+
+        function openDetailedEventViewModal(eventObj) {
+            document.getElementById('modal-event-title').innerText = eventObj.title;
+            document.getElementById('modal-event-description').innerText = eventObj.description;
+            
+            const mediaBox = document.getElementById('modal-event-media');
+            if(eventObj.video_url) {
+                mediaBox.innerHTML = `<video src="${eventObj.video_url}" controls autoplay loop style="width:100%; border-radius:4px; background:#000; max-height:180px;"></video>`;
+            } else {
+                mediaBox.innerHTML = `<img src="${eventObj.cover_photo_url}" style="width:100%; border-radius:4px; max-height:180px; object-fit:cover;">`;
+            }
+
+            // Fire target tracking intervals counting down to Second Life Time milestones
+            const targetTime = new Date(eventObj.slt_start_time).getTime();
+            const tickerBox = document.getElementById('modal-slt-countdown');
+            
+            clearInterval(window.currentSltTickerLoop);
+            
+            window.currentSltTickerLoop = setInterval(() => {
+                const now = new Date().getTime();
+                const delta = targetTime - now;
+                if(delta <= 0) {
+                    tickerBox.innerText = "EVENT ACTIVE NOW 🚀";
+                    clearInterval(window.currentSltTickerLoop);
+                } else {
+                    const hrs = Math.floor((delta % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const mins = Math.floor((delta % (1000 * 60 * 60)) / (1000 * 60));
+                    const secs = Math.floor((delta % (1000 * 60)) / 1000);
+                    tickerBox.innerText = `Starts in: ${hrs}h ${mins}m ${secs}s (SLT)`;
+                }
+            }, 1000);
+
+            document.getElementById('event-detail-modal').style.display = 'flex';
+        }
+
+        // --- STEP 4: DIGITAL MARKETPLACE LISTINGS SHOWCASE ENGINE ---
+        async function fetchAndRenderMarketplaceCatalogs() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/marketplace/items`);
+                const items = await response.json();
+                const grid = document.getElementById('marketplace-catalog-grid');
+                grid.innerHTML = '';
+
+                items.forEach(itm => {
+                    const itemCell = document.createElement('div');
+                    itemCell.style = "background:#111; border:1px solid #222; border-radius:6px; padding:15px; text-align:center; transition:0.2s;";
+                    itemCell.innerHTML = `
+                        <img src="${itm.cover_photo_url}" style="width:100%; height:140px; object-fit:cover; border-radius:4px; margin-bottom:10px;">
+                        <h4 style="margin:0 0 4px 0; color:#fff;">${itm.title}</h4>
+                        <p style="margin:0 0 10px 0; font-size:11px; color:#00ffff;">Store: ${itm.shop_name}</p>
+                        <p style="margin:0 0 15px 0; font-size:12px; color:#aaa; min-height:36px; text-align:left;">${itm.description}</p>
+                        <a href="${itm.buy_now_url}" target="_blank" style="background:#ff00ff; color:#fff; text-decoration:none; display:block; padding:10px; font-weight:bold; font-size:13px; border-radius:4px; text-transform:uppercase;">Buy Now</a>
+                    `;
+                    grid.appendChild(itemCell);
+                });
+            } catch (err) { console.error("Marketplace fetch fail: ", err); }
+        }
+
+        // Automatically trigger display layout calculations on initialization pass loop
+        fetchAndRenderPlatformEvents();
+        fetchAndRenderMarketplaceCatalogs();
 
     
     <!-- 5. APPLICATION SCRIPTS -->
