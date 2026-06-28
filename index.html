@@ -1,154 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SocialSplat - Your Second Life Dashboard</title>
-  <link rel="stylesheet" href="styles/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialSplat - Your Second Life Dashboard</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <style>
+        /* Alignment fixes for the identity navbar controls */
+        .header-actions { display: flex; gap: 15px; align-items: center; }
+        .nav-logo-link { text-decoration: none; color: inherit; }
+        #auth-modal { font-family: sans-serif; }
+    </style>
 </head>
 <body>
 
-  <!-- 1. HEADER SECTION (Inspired by Image Layout) -->
-  <header class="main-header">
-    <div class="logo">SocialSplat</div>
-    <nav class="nav-links">
-      <a href="#feed" class="active">Explore</a>
-      <a href="#events">Events</a>
-      <a href="#chatrooms">Chatrooms</a>
-      <a href="#store">Marketplace</a>
-      <a href="#profile">Profile</a>
-    </nav>
-    <div class="header-actions">
-      <span class="currency-display">L$ 24,500</span>
-      <button class="btn-primary">Connect to Viewer</button>
+    <!-- 1. HEADER SECTION -->
+    <header class="main-header">
+        <!-- Clicking logo triggers state flush and routes home -->
+        <a href="#feed" onclick="handleLogoClick(event)" class="nav-logo-link">
+            <div class="logo" style="cursor: pointer;">SocialSplat</div>
+        </a>
+        <nav class="nav-links">
+            <a href="#feed" class="active">Explore</a>
+            <a href="#events">Events</a>
+            <a href="#chatrooms">Chatrooms</a>
+            <a href="#store">Marketplace</a>
+            <a href="#profile">Profile</a>
+        </nav>
+        <div class="header-actions">
+            <span class="currency-display">L$ 24,500</span>
+            
+            <div id="auth-nav-controls" style="display: flex; gap: 10px; align-items: center;">
+                <button id="login-trigger-btn" onclick="openAuthModal()" class="btn-primary" style="cursor:pointer;">Connect Account</button>
+                <div id="user-status-badge" style="display:none; font-weight:bold; color:#00ffff; font-size:14px;"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- NEW: Pop-Up Authentication Overlay Container Panel -->
+    <div id="auth-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: #111; border: 2px solid #ff00ff; padding: 30px; width: 320px; border-radius: 8px; text-align: center; color: #fff;">
+            <h3 style="margin-top: 0; color: #fff;">SocialSplat Identity Connect</h3>
+            <p style="color: #b5b5b5; font-size: 13px; margin-bottom: 20px;">Link your account to unlock your personal custom MySpace canvas profile grid.</p>
+            
+            <!-- Step 1: Simulate Google Secure Sign-In -->
+            <button onclick="simulateGoogleLogin()" style="background:#fff; color:#000; border:none; width:100%; padding:10px; font-weight:bold; cursor:pointer; margin-bottom:15px; border-radius:4px;">Sign in with Google</button>
+            
+            <!-- Step 2: Input Second Life Username (Hidden until Google verification passes) -->
+            <div id="sl-input-section" style="display: none;">
+                <input type="text" id="sl-username-field" placeholder="Second Life Username (e.g. John Resident)" style="width: 90%; padding: 8px; background: #222; border: 1px solid #333; color: #fff; margin-bottom: 15px; border-radius:4px;">
+                <button onclick="submitAuthData()" style="background:#ff00ff; color:#fff; border:none; width:100%; padding:10px; font-weight:bold; cursor:pointer; border-radius:4px;">Complete Link</button>
+            </div>
+            
+            <button onclick="closeAuthModal()" style="background:none; color:#666; border:none; margin-top:15px; cursor:pointer; font-size:12px;">Cancel</button>
+        </div>
     </div>
-  </header>
 
-  <main class="dashboard-container">
+    <main class="dashboard-container">
+        <!-- 2. LIVE DASHBOARD HERO (TikTok Scroll / Three.js Preview Framework) -->
+        <section class="hero-scroll-section" id="feed">
+            <div class="hero-card">
+                <div class="media-container">
+                    <div class="badge-overlay">Trending Collab</div>
+                    <div class="mesh-renderer-placeholder">
+                        <span class="visual-anchor">Preview Here...</span>
+                    </div>
+                </div>
+                <div class="card-details">
+                    <h2> Earth N Fire Grillz </h2>
+                    <p>By @ukiyostore • Mesh creation available on Marketplace! </p>
+                    <div class="card-actions">
+                        <button class="btn-round">❤️ 2.2k</button>
+                        <button class="btn-round">💬 492</button>
+                        <button class="btn-action-primary">Buy on Marketplace here</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. MYSPACE-STYLE USER PROFILE SECTION -->
+        <section class="profile-grid-section" id="profile" style="--user-theme-color: #ff66a3; --user-bg-banner: url('https://unsplash.com');">
+            <div class="user-banner"></div>
+            <div class="profile-layout">
+                <!-- Left Column: Bio, Music, Badges -->
+                <aside class="profile-sidebar">
+                    <div class="profile-avatar-container">
+                        <div class="avatar-frame status-online">
+                            <img src="https://i.pinimg.com/736x/c0/21/b2/c021b21a32d7fe510d561754f8fcc1c4.jpg" alt="Avatar">
+                        </div>
+                        <!-- ID Hooks added to make fields change dynamically based on login -->
+                        <h3 id="profile-display-name">Ziploc™</h3>
+                        <p class="sl-username" id="profile-username-handle">@ziplocbagg.resident</p>
+                    </div>
+                    <div class="profile-audio-player">
+                        <p class="track-title">🎵 Now Playing: Punchmade-Dev-Bank-Specialist-Hoodtrap-Mixxx.mp3</p>
+                        <audio controls loop class="custom-audio-element" id="profile-audio-track">
+                            <source src="#" type="audio/mpeg">
+                        </audio>
+                    </div>
+                    <div class="badge-section">
+                        <h4>Badges</h4>
+                        <div class="badge-grid">
+                            <span class="badge badge-dev" title="App Developer">💻 Dev</span>
+                            <span class="badge badge-staff" title="Second Life Staff">👑 Splat Staff</span>
+                            <span class="badge badge-verified" title="Verified Creator">✔️ Certified Creator</span>
+                            <span class="badge badge-dj" title="Club DJ">🎧 OG User</span>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Right Column: HUD Dashboard / Stats / Active Events -->
+                <div class="profile-main-content">
+                    <div class="content-card hud-sync-panel">
+                        <h4> Real-Time Life Splat Hud Status</h4>
+                        <div class="stat-bar-group">
+                            <div class="stat-label"><span> Recent Skill: THC Cultivation 🍃 </span><span>85%</span></div>
+                            <div class="progress-container"><div class="progress-bar" style="width: 85%;"></div></div>
+                        </div>
+                        <div class="stat-bar-group">
+                            <div class="stat-label"><span> Recent Skill: Cooking 🍳 </span><span>40%</span></div>
+                            <div class="progress-container"><div class="progress-bar alert-status" style="width: 40%;"></div></div>
+                        </div>
+                    </div>
+                    <div class="content-card poll-card">
+                        <h4>Next Party Theme </h4>
+                        <p class="poll-ends">Ends: June 25, 2026</p>
+                        <div class="poll-options">
+                            <button class="poll-option-btn">Y2K/90s(64%)</button>
+                            <button class="poll-option-btn">Tropical (36%)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. MOBILE VIEWER INTERFACE EMBED -->
+        <section class="mobile-viewer-simulation">
+            <div class="mobile-device-frame">
+                <div class="viewer-render-area">
+                    <div class="imvu-top-layer">
+                        <button class="imvu-btn">💬 Nearby Chat</button>
+                        <button class="imvu-btn active">👗 Wardrobe</button>
+                        <button class="imvu-btn">🌍 Explore</button>
+                    </div>
+                    <div class="roblox-controls-layer">
+                        <div class="roblox-joystick" id="leftJoystick">
+                            <div class="joystick-thumb"></div>
+                        </div>
+                        <button class="roblox-jump-btn">▲</button>
+                    </div>
+                    <div class="wardrobe-overlay-drawer">
+                        <h5>My Inventory</h5>
+                        <div class="inventory-grid">
+                            <div class="inventory-item active">Body</div>
+                            <div class="inventory-item">Hair</div>
+                            <div class="inventory-item"> SocialSplat - Default Top</div>
+                            <div class="inventory-item"> SocialSplat - Default Boots</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js" defer></script>
     
-    <!-- 2. LIVE DASHBOARD HERO (TikTok Scroll / Three.js Preview Framework) -->
-    <section class="hero-scroll-section" id="feed">
-      <div class="hero-card">
-        <div class="media-container">
-          <div class="badge-overlay">Trending Collab</div>
-          <!-- Placeholder for Three.js / WebGL / Video Stream Mesh Renderer -->
-          <div class="mesh-renderer-placeholder">
-            <span class="visual-anchor">Preview Here...</span>
-          </div>
-        </div>
-        <div class="card-details">
-          <h2> Earth N Fire Grillz </h2>
-          <p>By @ukiyostore • Mesh creation available on Marketplace! </p>
-          <div class="card-actions">
-            <button class="btn-round">❤️ 2.2k</button>
-            <button class="btn-round">💬 492</button>
-            <button class="btn-action-primary">Buy on Marketplace here</button>
-          </div>
-        </div>
-      </div>
-    </section>
+    
+    <script>
+        // Update this link with your live Render server address when deployed!
+        const BACKEND_URL = "https://onrender.com"; 
 
-    <!-- 3. MYSPACE-STYLE USER PROFILE SECTION (Highly Customizable) -->
-    <section class="profile-grid-section" id="profile" style="--user-theme-color: #ff66a3; --user-bg-banner: url('https://unsplash.com');">
-      
-      <!-- Custom User Banner -->
-      <div class="user-banner"></div>
+        let currentGoogleUser = null;
 
-      <div class="profile-layout">
-        <!-- Left Column: Bio, Music, Badges -->
-        <aside class="profile-sidebar">
-          <div class="profile-avatar-container">
-            <div class="avatar-frame status-online">
-              <img src="https://i.pinimg.com/736x/c0/21/b2/c021b21a32d7fe510d561754f8fcc1c4.jpg" alt="Avatar">
-            </div>
-            <h3>Ziploc™</h3>
-            <p class="sl-username">@ziplocbagg.resident</p>
-          </div>
-
-          <!-- Profile Custom Audio Player -->
-          <div class="profile-audio-player">
-            <p class="track-title">🎵 Now Playing: Punchmade-Dev-Bank-Specialist-Hoodtrap-Mixxx.mp3</p>
-            <audio controls loop class="custom-audio-element">
-              <source src="#" type="audio/mpeg">
-            </audio>
-          </div>
-
-          <!-- Discord-Style Discord Badges Section -->
-          <div class="badge-section">
-            <h4>Badges</h4>
-            <div class="badge-grid">
-              <span class="badge badge-dev" title="App Developer">💻 Dev</span>
-              <span class="badge badge-staff" title="Second Life Staff">👑 Splat Staff</span>
-              <span class="badge badge-verified" title="Verified Creator">✔️ Certified Creator</span>
-              <span class="badge badge-dj" title="Club DJ">🎧 OG User</span>
-            </div>
-          </div>
-        </aside>
-
-        <!-- Right Column: HUD Dashboard / Stats / Active Events -->
-        <div class="profile-main-content">
-          <div class="content-card hud-sync-panel">
-            <h4> Real-Time Life Splat Hud Status</h4>
-            <div class="stat-bar-group">
-              <div class="stat-label"><span> Recent Skill: THC Cultivation 🍃 </span><span>85%</span></div>
-              <div class="progress-container"><div class="progress-bar" style="width: 85%;"></div></div>
-            </div>
-            <div class="stat-bar-group">
-              <div class="stat-label"><span> Recent Skill: Cooking 🍳 </span><span>40%</span></div>
-              <div class="progress-container"><div class="progress-bar alert-status" style="width: 40%;"></div></div>
-            </div>
-          </div>
-
-          <!-- Timed Poll Component -->
-          <div class="content-card poll-card">
-            <h4>Next Party Theme </h4>
-            <p class="poll-ends">Ends: June 25, 2026</p>
-            <div class="poll-options">
-              <button class="poll-option-btn">Y2K/90s(64%)</button>
-              <button class="poll-option-btn">Tropical (36%)</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 4. MOBILE VIEWER INTERFACE EMBED (IMVU UI + Roblox Control Architecture) -->
-    <section class="mobile-viewer-simulation">
-      <div class="mobile-device-frame">
-        <div class="viewer-render-area">
-          
-          <!-- Top IMVU Style Navigation Layer -->
-          <div class="imvu-top-layer">
-            <button class="imvu-btn">💬 Nearby Chat</button>
-            <button class="imvu-btn active">👗 Wardrobe</button>
-            <button class="imvu-btn">🌍 Explore</button>
-          </div>
-
-          <!-- Roblox Style Touch Controls Layer -->
-          <div class="roblox-controls-layer">
-            <div class="roblox-joystick" id="leftJoystick">
-              <div class="joystick-thumb"></div>
-            </div>
-            <button class="roblox-jump-btn">▲</button>
-          </div>
-
-          <!-- Open Inventory Overlay Grid -->
-          <div class="wardrobe-overlay-drawer">
-            <h5>My Inventory</h5>
-            <div class="inventory-grid">
-              <div class="inventory-item active">Body</div>
-              <div class="inventory-item">Hair</div>
-              <div class="inventory-item"> SocialSplat - Default Top</div>
-              <div class="inventory-item"> SocialSplat - Default Boots</div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-  </main>
-  
-  <script src="app.js" defer></script>
-</body>
-</html>
+        // Clears application state and forces route back to main explore timeline feed
+        function handleLogoClick(event) {
+            window.location.hash = 'feed';
