@@ -189,3 +189,69 @@
         }
 
         function closeAuthModal() {
+            
+        document.getElementById('auth-modal').style.display = 'none';}
+        
+        function simulateGoogleLogin() {
+        currentGoogleUser = {
+        id: "google_oauth_id_" + Math.floor(Math.random() * 100000),
+        email: "splatexplorer@gmail.com",
+        name: "Splat Nomad"
+        };
+        alert("Google Sign-In Successful! Type your Second Life username to map accounts.")
+        ;document.getElementById('sl-input-section').style.display = 'block';
+        }
+
+        async function submitAuthData() {
+        const slName = document.getElementById('sl-username-field').value;
+        if (!slName) return alert("Please type your active Second Life account name.");
+
+        const payload = {
+        google_id: currentGoogleUser.id,
+        email: currentGoogleUser.email,
+        sl_username: slName,
+        display_name: currentGoogleUser.name
+        };
+
+        try {
+        const response = await fetch(${BACKEND_URL}/api/auth/connect, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+
+        if (data.error) {
+        alert(data.error);
+        } else {
+        alert("Identity connected! Syncing dashboard cards...");
+        const userProfileObj = data.user[0];
+        localStorage.setItem('socialsplat_user', JSON.stringify(userProfileObj));
+        updateUIForLoggedInUser(userProfileObj);
+        closeAuthModal();
+        }
+        } catch (err) {
+        console.error("Auth server connection drop:", err);
+        alert("Could not reach authentication server engine.");
+        }
+        }
+
+        function updateUIForLoggedInUser(user) {
+        if(user) {
+        // Update Top Navigation Bar Badge
+        document.getElementById('login-trigger-btn').style.display = 'none';
+        const badge = document.getElementById('user-status-badge');
+        badge.innerText = 🟢 @${user.username};
+        badge.style.display = 'block';
+
+        // Update Profile View Cards dynamically
+        document.getElementById('profile-display-name').innerText = user.profile_name || "New Avatar";
+        document.getElementById('profile-username-handle').innerText = @${user.username};
+        }
+        }
+        
+        // Run verification check on browser startup loop
+        const activeSession = localStorage.getItem('socialsplat_user');
+        if (activeSession) {
+        updateUIForLoggedInUser(JSON.parse(activeSession));
+        }
