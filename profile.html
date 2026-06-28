@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="styles.css"> 
     <style>
         body { background-color: #050505; color: #ffffff; font-family: sans-serif; margin: 0; }
-        .nav-bar { background: #111; padding: 15px; display: flex; justify-content: space-between; border-bottom: 2px solid #222; }
+        .nav-bar { background: #111; padding: 15px; display: flex; justify-content: space-between; border-bottom: 2px solid #222; align-items: center; }
         .nav-logo { cursor: pointer; font-weight: bold; color: #ff00ff; text-decoration: none; }
         .profile-header { padding: 30px; text-align: center; border-bottom: 1px solid #1a1a1a; }
         .sandbox-area { padding: 20px; min-height: 200px; }
@@ -16,12 +16,31 @@
 </head>
 <body>
 
-    <!-- Top Navigation Bar -->
+    
     <div class="nav-bar">
         <a href="index.html" class="nav-logo">SOCIAL SPLAT</a>
-        <div>
-            <button onclick="alert('Google Login Context Placeholder')" style="background:#4285F4; color:#fff; border:none; padding:8px 12px; cursor:pointer; margin-right:10px;">Login with Google</button>
-            <button onclick="alert('Second Life Connect Context Placeholder')" style="background:#e85424; color:#fff; border:none; padding:8px 12px; cursor:pointer;">Link Second Life</button>
+        <div id="auth-nav-controls" style="display: flex; gap: 10px; align-items: center;">
+            <button id="login-trigger-btn" onclick="openAuthModal()" style="background:#4285F4; color:#fff; border:none; padding:8px 12px; cursor:pointer; font-weight:bold; border-radius:4px;">Connect Account</button>
+            <div id="user-status-badge" style="display:none; font-weight:bold; color:#00ffff;"></div>
+        </div>
+    </div>
+
+    <!-- NEW: Pop-Up Authentication Overlay Container Panel -->
+    <div id="auth-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: #111; border: 2px solid #ff00ff; padding: 30px; width: 320px; border-radius: 8px; text-align: center;">
+            <h3 style="color: #fff; margin-top: 0;">SocialSplat Identity Connect</h3>
+            <p style="color: #b5b5b5; font-size: 13px;">Link your account to unlock your personal custom MySpace canvas profile grid.</p>
+            
+            <!-- Step 1: Simulate Google Secure Sign-In -->
+            <button onclick="simulateGoogleLogin()" style="background:#fff; color:#000; border:none; width:100%; padding:10px; font-weight:bold; cursor:pointer; margin-bottom:15px; border-radius:4px;">Sign in with Google</button>
+            
+            <!-- Step 2: Input Second Life Username (Hidden until Google verification passes) -->
+            <div id="sl-input-section" style="display: none;">
+                <input type="text" id="sl-username-field" placeholder="Second Life Username (e.g. John Resident)" style="width: 90%; padding: 8px; background: #222; border: 1px solid #333; color: #fff; margin-bottom: 15px; border-radius:4px;">
+                <button onclick="submitAuthData()" style="background:#ff00ff; color:#fff; border:none; width:100%; padding:10px; font-weight:bold; cursor:pointer; border-radius:4px;">Complete Link</button>
+            </div>
+            
+            <button onclick="closeAuthModal()" style="background:none; color:#666; border:none; margin-top:15px; cursor:pointer; font-size:12px;">Cancel</button>
         </div>
     </div>
 
@@ -37,10 +56,74 @@
     <div id="myspace-sandbox" class="sandbox-area"></div>
 
     <script>
-        // Replace this URL with your live deployed backend URL later!
-        const BACKEND_URL = "http://localhost:5000"; 
-        
-        // Mock data simulating profile values pulled from database
+        // Update this link with your live Render server address when deployed!
+        const BACKEND_URL = "https://onrender.com"; 
+
+        // Local browser storage memory variables
+        let currentGoogleUser = null;
+
+        // --- AUTHENTICATION INTERACTIVE SYSTEM UI OPERATIONS ---
+        function openAuthModal() {
+            document.getElementById('auth-modal').style.display = 'flex';
+        }
+
+        function closeAuthModal() {
+            document.getElementById('auth-modal').style.display = 'none';
+        }
+
+        function simulateGoogleLogin() {
+            currentGoogleUser = {
+                id: "google_oauth_user_id_" + Math.floor(Math.random() * 100000),
+                email: "splatuser@gmail.com",
+                name: "Splat Explorer"
+            };
+            alert("Google Authentication Successful! Now link your Second Life identity.");
+            document.getElementById('sl-input-section').style.display = 'block';
+        }
+
+        async function submitAuthData() {
+            const slName = document.getElementById('sl-username-field').value;
+            if (!slName) return alert("Please enter your active Second Life account identity.");
+
+            const payload = {
+                google_id: currentGoogleUser.id,
+                email: currentGoogleUser.email,
+                sl_username: slName,
+                display_name: currentGoogleUser.name
+            };
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/auth/connect`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    alert("Account verified successfully!");
+                    localStorage.setItem('socialsplat_user', JSON.stringify(data.user));
+                    updateUIForLoggedInUser(data.user);
+                    closeAuthModal();
+                }
+            } catch (err) {
+                console.error("Auth transmission failure:", err);
+                alert("Could not communicate with authentication server engine.");
+            }
+        }
+
+        function updateUIForLoggedInUser(user) {
+            if(user) {
+                document.getElementById('login-trigger-btn').style.display = 'none';
+                const badge = document.getElementById('user-status-badge');
+                badge.innerText = `🟢 @${user.username}`;
+                badge.style.display = 'block';
+            }
+        }
+
+        // --- DATA DISPLAY ENGINE SETUP ---
         const mockProfileData = {
             profile_name: "Cyber Splat Maker",
             username: "ziplocbagg.resident",
@@ -60,11 +143,8 @@
         function renderProfile(data) {
             document.getElementById('display-name').innerText = data.profile_name;
             document.getElementById('username-handle').innerText = "@" + data.username;
-            
-            // Render custom HTML/CSS into the sandbox safely
             document.getElementById('myspace-sandbox').innerHTML = data.custom_html_css;
 
-            // Handle audio auto-play tracking loops
             if (data.bg_music_url) {
                 document.getElementById('audio-container').innerHTML = `
                     <audio src="${data.bg_music_url}" autoplay loop controls style="margin-top:15px; background:#111;"></audio>
@@ -72,7 +152,11 @@
             }
         }
 
-        // Run profile loader layout setup
+        // Initialize user login lookups and render profiles on page boot loops
+        const activeSession = localStorage.getItem('socialsplat_user');
+        if (activeSession) {
+            updateUIForLoggedInUser(JSON.parse(activeSession));
+        }
         renderProfile(mockProfileData);
     </script>
 </body>
